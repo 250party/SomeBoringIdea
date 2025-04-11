@@ -1,0 +1,10 @@
+import random
+
+a=[num for num in range(10) if num!=5]
+print (a)
+if 5 not in a:
+    print("5 is not in a")
+if 1 in a:
+    print("1 is  in a")
+a.remove(11)
+print(a)
