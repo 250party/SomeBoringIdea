@@ -4,7 +4,7 @@ import math
 WHITE="white"
 BLACK="black"
 
-PERSONNUMBER=10
+PERSONNUMBER=100
 class chess():
     def __init__(self,color,num):
         self.color=color
@@ -112,10 +112,11 @@ def main():
             PrintChess(Chess)
             break
         elif Chess==[] or CheckLose(Chess):
-            print("你失败了")
             if Chess==[]:
+                print("你失败了")
                 print("无人生还")
             else:
+                print("你失败了")
                 print(end='\t')
                 PrintChess(Chess)
             break
@@ -124,6 +125,8 @@ def main():
         Chess=TurnBlack(Chess)
         if CheckLose(Chess):
             print("你失败了")
+            print(end='\t')
+            PrintChess(Chess)
             break
         round+=1
 try:
