@@ -4,7 +4,7 @@ import math
 WHITE="white"
 BLACK="black"
 
-PERSONNUMBER=100
+PERSONNUMBER=10
 class chess():
     def __init__(self,color,num):
         self.color=color
