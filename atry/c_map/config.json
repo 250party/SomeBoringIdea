@@ -1,0 +1,8 @@
+{
+  "name": "c_map",
+
+  "test_edgeCollision": true,
+  "test_roomCollision": true,
+  "test_pop_roomSet": true,
+  "test_show_RoomSet": true
+}
