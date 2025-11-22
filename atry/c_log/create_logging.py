@@ -41,7 +41,7 @@ class LogManager:
             print(f"清理旧日志时出错: {e}")
 
     def get_logger(self, module_name, level=logging.INFO,cleanup_old=True):
-        """为不同模块获取独立的logger"""
+        """为不同模块获取独立的logger，level是过滤器"""
         logger = logging.getLogger(module_name)
 
         # 如果logger已经有handler，直接返回（避免重复添加）
@@ -90,12 +90,25 @@ log_manager = LogManager()
 
 
 # 便捷函数
-def get_module_logger(module_name):
+def get_module_logger(module_name,level):
     """获取模块logger的便捷函数"""
-    return log_manager.get_logger(module_name)
+    if level=='DEBUG':
+        level=logging.DEBUG
+    elif level=='INFO':
+        level=logging.INFO
+    elif level=='WARNING':
+        level=logging.WARNING
+    elif level=='ERROR':
+        level=logging.ERROR
+    elif level=='CRITICAL':
+        level=logging.CRITICAL
+    else:
+        level=logging.DEBUG
+    return log_manager.get_logger(module_name,level)
 
 def writeMapDataLog(map,module_name,level='DEBUG'):
-    logger=get_module_logger(module_name)
+    """自动过滤debug级别"""
+    logger=get_module_logger(module_name,'INFO')
     from dictionary import mapDictionary
     map1=[]
     for i in range(len(map)):

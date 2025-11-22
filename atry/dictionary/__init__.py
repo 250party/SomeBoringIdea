@@ -1,3 +1,3 @@
-from .dic import mapDictionary
+from .dic import mapDictionary,directionDictionary
 
-__all__ = ['mapDictionary']
+__all__ = ['mapDictionary','directionDictionary']

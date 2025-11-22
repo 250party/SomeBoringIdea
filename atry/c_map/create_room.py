@@ -1,16 +1,17 @@
+import time
 
 from c_log import *
 from dictionary import mapDictionary
 
 import random
 
-module_name='create_room'
-logger=get_module_logger(module_name)
-
 from c_json import GlobalConfig
 config=GlobalConfig()
 config.load_from_file('config.json')
 print(f"当前模块: {__name__}, config id: {id(config)}, config.name: {config.name}")
+
+module_name='create_room'
+logger=get_module_logger(module_name,config.create_room_logging_level)
 
 class Room():
     def __init__(self,upleft,height,width):
@@ -66,35 +67,71 @@ def roomCollision(roomSet, room):
         return False
 
 def cal_tryLimit(height,width):
-    """计算生成房间时的最大尝试次数"""
-    tryLimit=height*width
-    if tryLimit>1000:
-        tryLimit=1000
-    return tryLimit
+    """计算生成房间时的最大尝试次数。如果指定的config.tryLimit<=0,则对tryLimit进行计算"""
+    if config.tryLimit<=0:
+        tryLimit=height*width
+        if tryLimit>1000:
+            tryLimit=1000
+        return tryLimit
+    else:
+        if config.tryLimit>1000:
+            logger.warning(f"tryLimit过大,有{config.tryLimit}\n")
+        return config.tryLimit
 
 def cal_roomLimit(height,width):
-    """计算生成房间时的最大房间数量"""
-    return height*width
+    """计算生成房间时的最大房间数量。如果指定的config.roomLimit<=0,则对roomLimit进行计算"""
+    if config.roomLimit<=0:
+        return height*width
+    else:
+        if config.roomLimit>1000:
+            logger.warning(f"roomLimit过大,有{config.roomLimit}\n")
+        return config.roomLimit
 
 def cal_roomAtLeast(height,width):
-    """计算生成房间时尽可能要生成的房间数量"""
-    return 1
+    """计算生成房间时尽可能要生成的房间数量。如果指定的config.roomAtLeast<=0,则对roomAtLeast进行计算"""
+    if config.roomAtLeast<=0:
+        return 1
+    else:
+        if config.roomAtLeast>50:
+            logger.warning(f"roomAtLeast过大,有{config.roomAtLeast}\n")
+        return config.roomAtLeast
 
 def cal_roomMaxHeight(height):
-    """计算生成房间时的房间最大高度"""
-    roomMaxHeight=height//10
-    if roomMaxHeight <2:
-        roomMaxHeight=2
-    return roomMaxHeight
+    """计算生成房间时的房间最大高度，至少为2。如果指定的config.roomMaxHeight<=0或者>=地图高度的一半,则对roomMaxHeigh进行计算。"""
+    if config.roomMaxHeight<=0 or config.roomMaxHeight>=height//2:
+        roomMaxHeight=height//10
+        if roomMaxHeight <2:
+            roomMaxHeight=2
+        return roomMaxHeight
+    else:
+        return config.roomMaxHeight
 
 def cal_roomMaxWidth(width):
-    """计算生成房间时的房间最大宽度"""
-    roomMaxWidth = width // 10
-    if roomMaxWidth < 2:
-        roomMaxWidth = 2
-    return roomMaxWidth
+    """计算生成房间时的房间最大宽度，至少为2。如果指定的config.roomMaxWidth<=0或者>=地图宽度的一半,则对roomMaxWidth进行计算。"""
+    if config.roomMaxWidth<=0 or config.roomMaxWidth>=width//2:
+        roomMaxWidth = width // 10
+        if roomMaxWidth < 2:
+            roomMaxWidth = 2
+        return roomMaxWidth
+    else:
+        return config.roomMaxWidth
 
-def create_room(map_data,tryLimit=0,roomLimit=0,roomAtLeast=0):
+def cal_roomMinHeight(height,roomMaxHeight):
+    """计算房间的最小高度，至少为2。如果config.roomMinHeight<=0或者大于最大值，则计算roomMinHeight"""
+    if config.roomMinHeight <= 0 or config.roomMinHeight >= roomMaxHeight:
+        return 2
+    else:
+        return config.roomMinHeight
+
+def cal_roomMinWidth(width,roomMaxWidth):
+    """计算房间的最小宽度，至少为2。如果config.roomMinWidth<=0或者大于最大值，则计算roomMinWidth"""
+    if config.roomMinWidth <= 0 or config.roomMinWidth >= roomMaxWidth:
+        return 2
+    else:
+        return config.roomMinWidth
+
+def create_room(map_data):
+    start_time = time.time()
 
     logger.info(f"正在生成房间\n")
     height=len(map_data)    #包括边墙
@@ -104,31 +141,34 @@ def create_room(map_data,tryLimit=0,roomLimit=0,roomAtLeast=0):
 
     roomSet=[]
     tryTime=0
-    if tryLimit==0:
-        tryLimit=cal_tryLimit(height,width)
-    if roomLimit==0:
-        roomLimit=cal_roomLimit(height,width)
-    if roomAtLeast==0:
-        roomAtLeast=cal_roomAtLeast(height,width)
+
+    tryLimit=cal_tryLimit(height,width)
+
+    roomLimit=cal_roomLimit(height,width)
+    roomAtLeast=cal_roomAtLeast(height,width)
 
     roomMaxHeight=cal_roomMaxHeight(height)
     roomMaxWidth=cal_roomMaxWidth(width)
+
+    roomMinHeight=cal_roomMinHeight(height,roomMaxHeight)
+    roomMinWidth=cal_roomMinWidth(width,roomMaxWidth)
 
     edgeCollisionTime=0
     roomCollisionTime=0
     stop=False
 
     logger.info(f"生成参数为tryLimit={tryLimit}\troomLimit={roomLimit}\troomAtLimit={roomAtLeast}\n")
+    logger.info(f"roomMaxHeight={roomMaxHeight}\troomMaxWidth={roomMaxWidth}\troomMinHeight={roomMinHeight},roomMinWidth={roomMinWidth}\n")
     while True:
         #生成房间，每生成一个就检测是否碰撞，并且赋值
         tryTime+=1
 
         logger.info(f"第{tryTime}次尝试生成房间\n")
-        dup=random.randint(mapDictionary.hwall,height-1-mapDictionary.hwall)
+        dup=random.randint(mapDictionary.hwall,height-1-mapDictionary.hwall)    #在左下角生成1格高的房间是不允许的
         dleft=random.randint(mapDictionary.dwall,width-1-mapDictionary.dwall)
         rupleft=(dup,dleft)
-        rheight=random.randint(2,roomMaxHeight)
-        rwidth=random.randint(2,roomMaxWidth)
+        rheight=random.randint(roomMinHeight,roomMaxHeight)                     #生成1格高的房间是不允许的
+        rwidth=random.randint(roomMinWidth,roomMaxWidth)
         logger.info(f"房间的参数为:上左顶点{rupleft[0],rupleft[1]}，高度{rheight}，宽度{rwidth}\n")
         room=Room(rupleft,rheight,rwidth)
 
@@ -150,7 +190,7 @@ def create_room(map_data,tryLimit=0,roomLimit=0,roomAtLeast=0):
                             logger.error(f"发生了({k},{j})重叠\n")
                             stop=True
                         map_data[k][j] = mapDictionary.air
-                writeMapDataLog(map_data,module_name)
+                writeMapDataLog(map_data,module_name,config.create_room_show_map_logging_level)
                 roomSet.append(i)
                 if stop:
                     logger.info(f"生成了{len(roomSet)}个房间，尝试生成{tryTime}次，发生了edgeCollision{edgeCollisionTime}次，roomCollision{roomCollisionTime}次\n")
@@ -171,6 +211,14 @@ def create_room(map_data,tryLimit=0,roomLimit=0,roomAtLeast=0):
                 for j in range(room.upleft[1],room.upleft[1]+room.width ):
                     map_data[i][j]=mapDictionary.air
     logger.info(f"生成了{len(roomSet)}个房间，尝试生成{tryTime}次，发生了edgeCollision{edgeCollisionTime}次，roomCollision{roomCollisionTime}次\n")
+
+    write_main_important_data(f"生成了{len(roomSet)}个房间，尝试生成{tryTime}次，发生了edgeCollision{edgeCollisionTime}次，roomCollision{roomCollisionTime}次\n")
+    write_main_important_data(f"尝试上限为{tryLimit}，房间上限为{roomLimit}，警告的最小房间数为{roomAtLeast}\n")
+    write_main_important_data(f"最大房间高度为{roomMaxHeight}，最大房间宽度为{roomMaxHeight}\n")
+    write_main_important_data(f"最小房间高度为{roomMinHeight}，最小房间宽度为{roomMinHeight}\n\n")
+
+    print(f"create_room total_time:{time.time()-start_time}")
+    write_main_important_data(f"create_room total_time:{time.time() - start_time}\n")
     return map_data,roomSet
 
 if __name__ == '__main__':

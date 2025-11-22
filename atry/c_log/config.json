@@ -1,5 +1,7 @@
 {
-  "name": "c_log"
+  "name": "c_log",
 
+
+  "create_logging_log_level": "INFO"
 
 }

@@ -1,8 +1,36 @@
 {
   "name": "main.py",
 
+  "create_main_logging_level": "INFO",
+
+  "create_map_logging_level": "INFO",
+  "create_room_logging_level": "INFO",
+    "create_room_show_map_logging_level": "INFO",
+  "create_corridor_logging_level": "INFO",
+  "create_connect_point_logging_level": "INFO",
+
+  "create_bmp_logging_level": "INFO",
+
+  "create_logging_log_level": "INFO",
+
+  "mapHeight": 100,
+  "mapWidth": 100,
+  "test_show_RoomSet": true,
+
+
   "test_edgeCollision": false,
   "test_roomCollision": false,
   "test_pop_roomSet": false,
-  "test_show_RoomSet": true
+
+  "tryLimit": 1000,
+  "roomLimit": 500,
+  "roomAtLeast": 0,
+
+  "roomMaxHeight": 0,
+  "roomMaxWidth": 0,
+  "roomMinHeight": 0,
+  "roomMinWidth": 0,
+
+
+  "try_directionLimit": 4
 }

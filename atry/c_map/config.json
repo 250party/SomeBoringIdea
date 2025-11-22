@@ -1,8 +1,31 @@
 {
   "name": "c_map",
 
+
+  "create_map_logging_level": "INFO",
+  "create_room_logging_level": "INFO",
+    "create_room_show_map_logging_level": "INFO",
+  "create_corridor_logging_level": "INFO",
+  "create_connect_point_logging_level": "INFO",
+
+  "mapHeight": 100,
+  "mapWidth": 100,
+  "test_show_RoomSet": true,
+
+
   "test_edgeCollision": true,
   "test_roomCollision": true,
   "test_pop_roomSet": true,
-  "test_show_RoomSet": true
+
+  "tryLimit": 1000,
+  "roomLimit": 1000,
+  "roomAtLeast": 0,
+
+  "roomMaxHeight": 0,
+  "roomMaxWidth": 0,
+  "roomMinHeight": 0,
+  "roomMinWidth": 0,
+
+
+  "try_directionLimit": 4
 }

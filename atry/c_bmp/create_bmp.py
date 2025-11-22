@@ -1,10 +1,17 @@
 import os
+import time
+
 from c_log import *
 from invaild_filename.invaild import has_invalid_filename_chars
 import random
 
+from c_json import GlobalConfig
+config=GlobalConfig()
+config.load_from_file('config.json')
+print(f"当前模块: {__name__}, config id: {id(config)}, config.name: {config.name}")
+
 module_name='create_bmp'
-logger=get_module_logger(module_name)
+logger=get_module_logger(module_name,config.create_bmp_logging_level)
 
 #指向该模块目录
 def dir_filepath():
@@ -57,9 +64,9 @@ def create_random_bmp(filename, width, height,test=False,testfile='test_bmp'):
     if has_invalid_filename_chars(filename):
         return None
     #重定向到该文件夹
-    filepath=dir_filepath()
+    #filepath=dir_filepath()
     #如果在测试，那就放到测试文件夹
-    filename = dir_filename(test, filepath,filename,testfile)
+    #filename = dir_filename(test, filepath,filename,testfile)
     #初始化bmp
     row_size,pixel_data,bmp_header,bmp_info_header = create_bmp_data(width, height)
 
@@ -84,6 +91,7 @@ def create_random_bmp(filename, width, height,test=False,testfile='test_bmp'):
 
 
 def create_bmp(filename, map_data, test=False, testfile='test_bmp'):
+    start_time = time.time()
     if has_invalid_filename_chars(filename):
         return None
     # 重定向到该文件夹
@@ -102,15 +110,27 @@ def create_bmp(filename, map_data, test=False, testfile='test_bmp'):
     #python对未赋值的数组元素自动填充0000000000
     for y in range(height):
         for x in range(width):
-            pixel_index = y * row_size + x * 3
+            # 修正：将y坐标翻转，BMP的第一行对应图像底部
+            pixel_index = (height - 1 - y) * row_size + x * 3
+
             from dictionary import mapDictionary
             if map_data[y][x] == mapDictionary.soild:
                 pixel_data[pixel_index] = 0  # 蓝色
                 pixel_data[pixel_index + 1] = 0  # 绿色
                 pixel_data[pixel_index + 2] = 0  # 红色
+                if y == 0 and (x == 0 or x == 2):
+                    pixel_data[pixel_index+2] = 127  # 蓝色
             elif map_data[y][x] == mapDictionary.air:
                 pixel_data[pixel_index] = 255  # 蓝色
                 pixel_data[pixel_index + 1] = 255  # 绿色
+                pixel_data[pixel_index + 2] = 255  # 红色
+            elif map_data[y][x] == mapDictionary.path:
+                pixel_data[pixel_index] = 153  # 蓝色
+                pixel_data[pixel_index + 1] = 153  # 绿色
+                pixel_data[pixel_index + 2] = 153  # 红色
+            elif map_data[y][x] == mapDictionary.connect_point:
+                pixel_data[pixel_index] = 90  # 蓝色
+                pixel_data[pixel_index + 1] = 233  # 绿色
                 pixel_data[pixel_index + 2] = 255  # 红色
             else:
                 pixel_data[pixel_index] = 127  # 蓝色
@@ -118,12 +138,16 @@ def create_bmp(filename, map_data, test=False, testfile='test_bmp'):
                 pixel_data[pixel_index + 2] = 127  # 红色
 
     # 写入文件
-    with open(filename, 'wb') as f:
+    if not os.path.exists("zzz_bmp"):
+        os.makedirs("zzz_bmp")
+    with open(f"zzz_bmp//{filename}", 'wb') as f:
         f.write(bmp_header)
         f.write(bmp_info_header)
         f.write(pixel_data)
 
-    print(f"create bmp success: {filename} ({width}x{height})")
+    print(f"create bmp success: zzz_bmp//{filename} ({width}x{height})")
+    print(f"create_bmp total_time:{time.time() - start_time}")
+    write_main_important_data(f"create_bmp total_time:{time.time() - start_time}\n")
     return True
 # 使用示例
 if __name__=='__main__':
