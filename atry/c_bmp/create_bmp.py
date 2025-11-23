@@ -132,6 +132,10 @@ def create_bmp(filename, map_data, test=False, testfile='test_bmp'):
                 pixel_data[pixel_index] = 90  # 蓝色
                 pixel_data[pixel_index + 1] = 233  # 绿色
                 pixel_data[pixel_index + 2] = 255  # 红色
+            elif map_data[y][x] == mapDictionary.ban:
+                pixel_data[pixel_index] = 127  # 蓝色
+                pixel_data[pixel_index + 1] = 127  # 绿色
+                pixel_data[pixel_index + 2] = 255  # 红色
             else:
                 pixel_data[pixel_index] = 127  # 蓝色
                 pixel_data[pixel_index + 1] = 127  # 绿色

@@ -121,6 +121,8 @@ def writeMapDataLog(map,module_name,level='DEBUG'):
                     row.append('■ ')
             elif map[i][j] == mapDictionary.air:
                 row.append('  ')
+            else :
+                row.append('A ')
         map1.append(row)
     map2='\n'.join(''.join(row) for row in map1)
     if level=='DEBUG':

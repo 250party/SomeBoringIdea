@@ -5,6 +5,7 @@ class mapDictionary():
     soild=1
     path=2
     connect_point=3
+    ban=-1
 
     hwall=1
     dwall=1

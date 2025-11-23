@@ -18,6 +18,9 @@ c_log.start_main_important_data()
 import sys
 sys.setrecursionlimit(5000)  # 将递归深度限制提高到5000
 
+assert config.mapHeight>=2
+assert config.mapWidth>=2
+
 if __name__ == "__main__":
     start_time = time.time()
 

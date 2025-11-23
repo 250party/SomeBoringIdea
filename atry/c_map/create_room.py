@@ -164,11 +164,26 @@ def create_room(map_data):
         tryTime+=1
 
         logger.info(f"第{tryTime}次尝试生成房间\n")
-        dup=random.randint(mapDictionary.hwall,height-1-mapDictionary.hwall)    #在左下角生成1格高的房间是不允许的
-        dleft=random.randint(mapDictionary.dwall,width-1-mapDictionary.dwall)
-        rupleft=(dup,dleft)
-        rheight=random.randint(roomMinHeight,roomMaxHeight)                     #生成1格高的房间是不允许的
-        rwidth=random.randint(roomMinWidth,roomMaxWidth)
+        if config.create_corridor1_condition:
+            dup=0
+            while dup%2!=1:
+                dup=random.randint(mapDictionary.hwall,height-1-mapDictionary.hwall)    #在左下角生成1格高的房间是不允许的
+            dleft=0
+            while dleft%2!=1:
+                dleft=random.randint(mapDictionary.dwall,width-1-mapDictionary.dwall)
+            rupleft=(dup,dleft)
+            rheight=0
+            while rheight%2!=1:
+                rheight=random.randint(roomMinHeight,roomMaxHeight)                     #生成1格高的房间是不允许的
+            rwidth=0
+            while rwidth%2!=1:
+                rwidth=random.randint(roomMinWidth,roomMaxWidth)
+        else:
+            dup = random.randint(mapDictionary.hwall, height - 1 - mapDictionary.hwall)  # 在左下角生成1格高的房间是不允许的
+            dleft = random.randint(mapDictionary.dwall, width - 1 - mapDictionary.dwall)
+            rupleft = (dup, dleft)
+            rheight = random.randint(roomMinHeight, roomMaxHeight)  # 生成1格高的房间是不允许的
+            rwidth = random.randint(roomMinWidth, roomMaxWidth)
         logger.info(f"房间的参数为:上左顶点{rupleft[0],rupleft[1]}，高度{rheight}，宽度{rwidth}\n")
         room=Room(rupleft,rheight,rwidth)
 
@@ -215,10 +230,10 @@ def create_room(map_data):
     write_main_important_data(f"生成了{len(roomSet)}个房间，尝试生成{tryTime}次，发生了edgeCollision{edgeCollisionTime}次，roomCollision{roomCollisionTime}次\n")
     write_main_important_data(f"尝试上限为{tryLimit}，房间上限为{roomLimit}，警告的最小房间数为{roomAtLeast}\n")
     write_main_important_data(f"最大房间高度为{roomMaxHeight}，最大房间宽度为{roomMaxHeight}\n")
-    write_main_important_data(f"最小房间高度为{roomMinHeight}，最小房间宽度为{roomMinHeight}\n\n")
+    write_main_important_data(f"最小房间高度为{roomMinHeight}，最小房间宽度为{roomMinHeight}\n")
 
     print(f"create_room total_time:{time.time()-start_time}")
-    write_main_important_data(f"create_room total_time:{time.time() - start_time}\n")
+    write_main_important_data(f"create_room total_time:{time.time() - start_time}\n\n")
     return map_data,roomSet
 
 if __name__ == '__main__':

@@ -1,0 +1,27 @@
+初始化地图	地图有100格高，100格宽
+create_bmp total_time:0.008124351501464844
+生成了100个房间，尝试生成287次，发生了edgeCollision23次，roomCollision164次
+尝试上限为1000，房间上限为100，警告的最小房间数为1
+最大房间高度为10，最大房间宽度为10
+最小房间高度为2，最小房间宽度为2
+create_room total_time:0.03540658950805664
+
+create_bmp total_time:0.007871627807617188
+create_room,生成了100个房间，总共10000个方格,覆盖了2926个方格，剩余7074个方格，房间覆盖率为0.2926
+
+create_corridor1 total_time:0.24659490585327148
+
+create_bmp total_time:0.008001565933227539
+create_corridor，总共10000个方格,覆盖了2877个方格，剩余4197个方格，路径覆盖率为0.2877,总覆盖率0.5803
+
+create_connect_point total_time:0.13957428932189941
+
+create_bmp total_time:0.007960319519042969
+back_corridor_end total_time:0.4160141944885254
+create_bmp total_time:0.007828474044799805
+反雕刻，总共10000个方格,剩余4937个soild方格，总覆盖率0.5063
+
+create_map total_time:0.8970377445220947
+
+create_bmp total_time:0.008242607116699219
+运行__main__的总时间是0.9058945178985596s

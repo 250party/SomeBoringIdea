@@ -13,7 +13,7 @@ config.load_from_file('config.json')
 print(f"当前模块: {__name__}, config id: {id(config)}, config.name: {config.name}")
 
 module_name='create_corridor'
-logger=get_module_logger(module_name,config.create_room_logging_level)
+logger=get_module_logger(module_name,config.create_corridor_logging_level)
 
 def isPath(map_data,y,x):
     """对下一个路径y,x，是否就是道路"""

@@ -7,6 +7,9 @@
     "create_room_show_map_logging_level": "INFO",
   "create_corridor_logging_level": "INFO",
   "create_connect_point_logging_level": "INFO",
+  "back_corridor_end_logging_level": "INFO",
+
+  "create_bmp_logging_level": "INFO",
 
   "mapHeight": 100,
   "mapWidth": 100,
@@ -27,5 +30,9 @@
   "roomMinWidth": 0,
 
 
-  "try_directionLimit": 4
+  "try_directionLimit": 4,
+
+  "create_corridor1_condition": true,
+
+  "smallChanceOpen": 50
 }
